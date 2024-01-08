@@ -15,6 +15,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "classix": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

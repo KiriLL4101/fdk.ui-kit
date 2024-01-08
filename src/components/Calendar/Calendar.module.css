@@ -65,3 +65,8 @@
   color: hsla(0, 0%, 100%, 0.3);
   font-size: 10px;
 }
+
+.selected {
+  border-radius: 50%;
+  border: 1px solid #0091ff;
+}

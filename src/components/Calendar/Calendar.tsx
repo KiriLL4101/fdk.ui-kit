@@ -76,10 +76,7 @@ const getNextMonthDays = (year: number, month: number) => {
   const nextMonthCellsAmount =
     VISIBLE_CELLS_AMOUNT -
     getPreviousMonthDays(year, month).length -
-    getCurrentMonthDays(year, month, getDaysAmountInMonth(year, month))
-      .length;
-
-  const daysAmountInPrevMonth = getDaysAmountInMonth(year, month + 1);
+    getCurrentMonthDays(year, month, getDaysAmountInMonth(year, month)).length;
 
   const dateCells: DateCellItem[] = [];
 
@@ -87,8 +84,6 @@ const getNextMonthDays = (year: number, month: number) => {
     month === 0 ? [year - 1, 11] : [year, month - 1];
 
   for (let i = 1; i <= nextMonthCellsAmount; i++) {
-    console.log("date: ", daysAmountInPrevMonth - i);
-
     dateCells.push({
       year: cellYear,
       month: cellMonth,
@@ -100,7 +95,7 @@ const getNextMonthDays = (year: number, month: number) => {
   return dateCells;
 };
 
-export const getCurrentMonthDays = (
+const getCurrentMonthDays = (
   year: number,
   month: number,
   numberOfDays: number
@@ -120,8 +115,20 @@ export const getCurrentMonthDays = (
 };
 
 export const Calendar = () => {
-  const [panelYear, setPanelYear] = useState(() => new Date().getFullYear());
-  const [panelMonth, setPanelMonth] = useState(() => new Date().getMonth() + 1);
+  const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
+
+  const [panelYear, setPanelYear] = useState(() => selectedDate.getFullYear());
+  const [panelMonth, setPanelMonth] = useState(
+    () => selectedDate.getMonth() + 1
+  );
+
+  const [selectedYear, selectedMonth, selectedDay] = useMemo(() => {
+    return [
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      selectedDate.getDate(),
+    ];
+  }, [selectedDate]);
 
   const dateCells = useMemo(() => {
     return [
@@ -136,24 +143,31 @@ export const Calendar = () => {
   }, [panelMonth, panelYear]);
 
   const onPrevMonthClick = () => {
-    setPanelMonth(prev => {
-      if (prev === 1) {
-        setPanelYear(prev => prev - 1);
-        return 12;
+    setPanelMonth((prev) => {
+      if (prev === 0) {
+        setPanelYear((prev) => prev - 1);
+        return 11;
       }
       return prev - 1;
     });
-  }
+  };
 
   const onNextMonthClick = () => {
-    setPanelMonth(prev => {
-      if (prev === 12) {
-        setPanelYear(prev => prev + 1);
-        return 1;
+    setPanelMonth((prev) => {
+      if (prev === 11) {
+        setPanelYear((prev) => prev + 1);
+        return 0;
       }
       return prev + 1;
-    })
+    });
+  };
+
+  const onDateClick = (date: DateCellItem) => {
+    setSelectedDate(new Date(date.year, date.month - 1, date.date));
   }
+
+  console.log('selectedDate', selectedDate);
+  
 
   return (
     <div className={styles.panel}>
@@ -183,15 +197,22 @@ export const Calendar = () => {
           </div>
         ))}
 
-        {dateCells.map((item, index) => (
-          <div
-            key={index}
-            className={styles.cell}
-            style={{ opacity: item.type === "current" ? 1 : 0.5 }}
-          >
-            {item.date}
-          </div>
-        ))}
+        {dateCells.map((item, index) => {
+          const isSelected =
+            item.year === selectedYear &&
+            item.month === selectedMonth &&
+            item.date === selectedDay;
+          return (
+            <div
+              key={index}
+              className={cx(styles.cell, isSelected && styles.selected)}
+              style={{ opacity: item.type === "current" ? 1 : 0.5 }}
+              onClick={() => onDateClick(item)}
+            >
+              {item.date}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

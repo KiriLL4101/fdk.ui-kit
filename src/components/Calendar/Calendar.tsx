@@ -166,8 +166,6 @@ export const Calendar = () => {
     setSelectedDate(new Date(date.year, date.month - 1, date.date));
   }
 
-  console.log('selectedDate', selectedDate);
-  
 
   return (
     <div className={styles.panel}>

@@ -1,3 +1,4 @@
+import { CenterDecorator } from "./../src/decorators/CenterDecorator";
 import type { Preview } from "@storybook/react";
 
 const preview: Preview = {
@@ -10,6 +11,7 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [CenterDecorator()],
 };
 
 export default preview;
